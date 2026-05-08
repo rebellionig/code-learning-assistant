@@ -183,6 +183,21 @@ def hint_status():
     return jsonify({"used": used, "limit": HINTS_PER_WEEK, "remaining": max(0, HINTS_PER_WEEK - used)})
 
 
+
+def load_language_docs(language):
+    lang_map = {
+        'Python': 'python', 'JavaScript': 'javascript', 'Java': 'java',
+        'C++': 'cpp', 'TypeScript': 'typescript', 'Go': 'go', 'Rust': 'rust',
+    }
+    filename = lang_map.get(language, language.lower())
+    docs_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'docs', filename + '.md')
+    try:
+        with open(docs_path, 'r') as f:
+            return f.read()[:1500]
+    except FileNotFoundError:
+        return None
+
+
 def generate_hint(task):
     if not client:
         import random
@@ -202,11 +217,12 @@ def generate_hint(task):
                     "Keep it under 3 sentences. End with a guiding question. Add: 'Verify with docs.'"
                 )},
                 {"role": "user", "content": (
-                    f"Task: {task['title']}\nDescription: {task['description']}\nLanguage: {task['language']}\n\n"
-                    "Give me a hint without giving away the answer."
+                    f"Task: {task['title']}\nDescription: {task['description']}\nLanguage: {task['language']}"
+                    + (("\n\nDocumentation links:\n" + load_language_docs(task['language'])) if load_language_docs(task['language']) else "")
+                    + "\n\nGive me a hint without giving away the answer."
                 )}
             ],
-            max_tokens=150,
+            max_tokens=200,
             temperature=0.7
         )
         return response.choices[0].message.content.strip()
@@ -290,9 +306,7 @@ def get_analytics():
         "daily_hints": [{"day": str(r["day"]), "count": r["count"]} for r in daily_hints],
     })
 
-# Auto-init DB on startup (for Render)
-with app.app_context():
-    init_db()
+
 # ── RUN ────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":

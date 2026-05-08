@@ -167,3 +167,70 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 .output-success .output-header { color: var(--green); }
 .output-error .output-header { color: var(--red); }
 .output-text { margin: 0; padding: 12px 14px; font-family: "Fira Code","Consolas",monospace; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-all; background: var(--surface); max-height: 200px; overflow-y: auto; color: var(--text); }
+
+/* ── AUTH ── */
+.auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); padding: 20px; }
+.auth-box { width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px; }
+.auth-logo { font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 6px; }
+.auth-sub { text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+.auth-tabs { display: flex; gap: 0; margin-bottom: 20px; background: var(--surface2); border-radius: 8px; padding: 3px; }
+.auth-tab { flex: 1; background: none; border: none; color: var(--text-muted); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.15s; }
+.auth-tab.active { background: var(--accent); color: #fff; }
+.auth-form { display: flex; flex-direction: column; gap: 14px; }
+.auth-submit { width: 100%; padding: 11px; font-size: 15px; }
+.auth-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--red); border-radius: 7px; padding: 10px 12px; font-size: 13px; }
+.auth-note { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 16px; line-height: 1.5; }
+
+/* ── SETTINGS ── */
+.settings-page { max-width: 500px; }
+.settings-page h2 { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+.settings-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.settings-row:last-child { border-bottom: none; }
+.settings-label { font-size: 14px; font-weight: 600; }
+.settings-value { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.settings-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.toggle-btn { padding: 6px 16px; border-radius: 20px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+.toggle-btn.on { background: var(--green); color: #fff; }
+.toggle-btn.off { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+.settings-actions { display: flex; gap: 10px; }
+.btn-logout { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 9px 18px; border-radius: 7px; font-size: 14px; cursor: pointer; }
+.btn-danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--red); padding: 9px 18px; border-radius: 7px; font-size: 14px; cursor: pointer; }
+
+/* ── FLASHCARDS ── */
+.flashcards-page { width: 100%; }
+.btn-study { background: rgba(108,99,255,0.15); border: 1px solid var(--accent); color: var(--accent); padding: 9px 18px; border-radius: 7px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-study:hover { background: var(--accent); color: #fff; }
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.card-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; position: relative; }
+.card-item .btn-delete { position: absolute; top: 10px; right: 10px; }
+.card-item-q { font-weight: 600; font-size: 13px; margin-bottom: 8px; padding-right: 24px; }
+.card-item-a { font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px; }
+
+.study-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.study-progress { font-size: 13px; color: var(--text-muted); }
+.flashcard { width: 100%; max-width: 600px; margin: 0 auto; height: 280px; cursor: pointer; perspective: 1000px; }
+.flashcard-inner { position: relative; width: 100%; height: 100%; transition: transform 0.4s; transform-style: preserve-3d; }
+.flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+.flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: var(--radius); border: 1px solid var(--border); padding: 28px; display: flex; flex-direction: column; justify-content: center; }
+.flashcard-front { background: var(--surface); }
+.flashcard-back { background: var(--surface2); transform: rotateY(180deg); }
+.card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 12px; }
+.card-text { font-size: 18px; line-height: 1.5; text-align: center; }
+.card-hint { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 16px; }
+.study-nav { display: flex; justify-content: center; gap: 12px; margin-top: 24px; }
+.btn-nav { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 24px; border-radius: 7px; font-size: 14px; cursor: pointer; transition: all 0.15s; }
+.btn-nav:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ── IDEAS ── */
+.ideas-page { width: 100%; }
+.ideas-list { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+.idea-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; }
+.idea-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.idea-title { font-size: 15px; font-weight: 600; }
+.idea-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.difficulty-tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+.diff-beginner { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.diff-intermediate { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+.diff-advanced { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }

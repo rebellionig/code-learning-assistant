@@ -13,7 +13,7 @@ const LANGUAGE_IDS = {
 
 const JUDGE0_URL = "https://ce.judge0.com";
 
-export default function TaskDetail({ task, onToggleComplete, onHintUsed, hintStatus, api }) {
+export default function TaskDetail({ task, onToggleComplete, onHintUsed, hintStatus, api, token }) {
   const [hints, setHints] = useState([]);
   const [loadingHint, setLoadingHint] = useState(false);
   const [error, setError] = useState(null);
@@ -30,7 +30,7 @@ export default function TaskDetail({ task, onToggleComplete, onHintUsed, hintSta
   }, [task?.id]);
 
   async function fetchHints() {
-    const res = await fetch(`${api}/tasks/${task.id}/hints`);
+    const res = await fetch(`${api}/tasks/${task.id}/hints`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
     setHints(data);
   }
@@ -43,7 +43,7 @@ export default function TaskDetail({ task, onToggleComplete, onHintUsed, hintSta
     setLoadingHint(true);
     setError(null);
     try {
-      const res = await fetch(`${api}/tasks/${task.id}/hints`, { method: "POST" });
+      const res = await fetch(`${api}/tasks/${task.id}/hints`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Could not get hint");

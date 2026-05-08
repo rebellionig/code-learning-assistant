@@ -290,7 +290,9 @@ def get_analytics():
         "daily_hints": [{"day": str(r["day"]), "count": r["count"]} for r in daily_hints],
     })
 
-
+# Auto-init DB on startup (for Render)
+with app.app_context():
+    init_db()
 # ── RUN ────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":

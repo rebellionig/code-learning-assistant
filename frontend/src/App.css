@@ -234,3 +234,33 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 .diff-beginner { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
 .diff-intermediate { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
 .diff-advanced { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+
+/* ── LANGUAGE FILTER (FR8) ── */
+.lang-filter { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.filter-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); padding: 5px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; transition: all 0.15s; }
+.filter-btn:hover, .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ── SPACED REPETITION (FR6) ── */
+.review-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+.btn-dontknow { flex: 1; max-width: 200px; background: rgba(239,68,68,0.1); border: 1px solid var(--red); color: var(--red); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.btn-dontknow span { font-size: 11px; font-weight: 400; opacity: 0.8; }
+.btn-dontknow:hover { background: var(--red); color: #fff; }
+.btn-know { flex: 1; max-width: 200px; background: rgba(34,197,94,0.1); border: 1px solid var(--green); color: var(--green); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.btn-know span { font-size: 11px; font-weight: 400; opacity: 0.8; }
+.btn-know:hover { background: var(--green); color: #fff; }
+.btn-due { background: rgba(245,158,11,0.15); border: 1px solid var(--yellow); color: var(--yellow); padding: 9px 18px; border-radius: 7px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.btn-due:hover { background: var(--yellow); color: #000; }
+.due-banner { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: var(--yellow); border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; font-size: 13px; }
+.card-due { border-color: rgba(245,158,11,0.4) !important; }
+.card-item-meta { display: flex; gap: 8px; margin-top: 6px; font-size: 11px; color: var(--text-muted); }
+.due-tag { color: var(--yellow); font-weight: 600; }
+
+/* ── LEARNING PATH (FR10) ── */
+.learning-path-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+.suggestions-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.suggestion-card { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); }
+.type-improve { border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.05); }
+.type-new { border-color: rgba(108,99,255,0.3); background: rgba(108,99,255,0.05); }
+.type-advance { border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.05); }
+.suggestion-lang { font-weight: 700; font-size: 13px; min-width: 90px; }
+.suggestion-reason { font-size: 13px; color: var(--text-muted); }

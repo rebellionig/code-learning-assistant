@@ -6,6 +6,7 @@ export default function TaskList({ tasks, onCreateTask, onSelectTask, onToggleCo
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: "", description: "", language: "Python" });
   const [creating, setCreating] = useState(false);
+  const [filterLang, setFilterLang] = useState("All");
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -17,8 +18,12 @@ export default function TaskList({ tasks, onCreateTask, onSelectTask, onToggleCo
     setCreating(false);
   }
 
-  const completed = tasks.filter((t) => t.completed);
-  const active = tasks.filter((t) => !t.completed);
+  // Get languages actually used in tasks
+  const usedLanguages = ["All", ...new Set(tasks.map((t) => t.language))];
+
+  const filtered = filterLang === "All" ? tasks : tasks.filter((t) => t.language === filterLang);
+  const completed = filtered.filter((t) => t.completed);
+  const active = filtered.filter((t) => !t.completed);
 
   return (
     <div className="task-list-page">
@@ -31,6 +36,21 @@ export default function TaskList({ tasks, onCreateTask, onSelectTask, onToggleCo
           {showForm ? "Cancel" : "+ New Task"}
         </button>
       </div>
+
+      {/* Language filter */}
+      {tasks.length > 0 && (
+        <div className="lang-filter">
+          {usedLanguages.map((lang) => (
+            <button
+              key={lang}
+              className={`filter-btn ${filterLang === lang ? "active" : ""}`}
+              onClick={() => setFilterLang(lang)}
+            >
+              {lang}
+            </button>
+          ))}
+        </div>
+      )}
 
       {showForm && (
         <form className="task-form" onSubmit={handleSubmit}>
@@ -109,6 +129,13 @@ export default function TaskList({ tasks, onCreateTask, onSelectTask, onToggleCo
             ))}
           </div>
         </section>
+      )}
+
+      {filtered.length === 0 && tasks.length > 0 && (
+        <div className="empty-state">
+          <p>No {filterLang} tasks yet.</p>
+          <p>Create a new task or switch the filter.</p>
+        </div>
       )}
     </div>
   );

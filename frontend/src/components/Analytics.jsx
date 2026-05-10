@@ -2,13 +2,18 @@ import { useState, useEffect } from "react";
 
 export default function Analytics({ api, token }) {
   const [data, setData] = useState(null);
+  const [path, setPath] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${api}/analytics`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((d) => { setData(d); setLoading(false); })
-      .catch(() => setLoading(false));
+    Promise.all([
+      fetch(`${api}/analytics`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
+      fetch(`${api}/learning-path`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json())
+    ]).then(([analytics, lp]) => {
+      setData(analytics);
+      setPath(lp);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, []);
 
   if (loading) return <div className="analytics-loading">Loading analytics...</div>;
@@ -124,6 +129,20 @@ export default function Analytics({ api, token }) {
           })}
         </div>
       </div>
+
+      {path && path.suggestions && path.suggestions.length > 0 && (
+        <div className="learning-path-box">
+          <div className="chart-title">🗺 What to Learn Next (FR10)</div>
+          <div className="suggestions-list">
+            {path.suggestions.map((s, i) => (
+              <div key={i} className={`suggestion-card type-${s.type}`}>
+                <span className="suggestion-lang">{s.language}</span>
+                <span className="suggestion-reason">{s.reason}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <p className="analytics-note">
         Data is stored locally in SQLite. Share screenshots of this page in your Hypothesis Test Report (Assignment 4, Part 3.2).

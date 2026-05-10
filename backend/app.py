@@ -62,6 +62,9 @@ def init_db():
             user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
             question TEXT NOT NULL,
             answer TEXT NOT NULL,
+            next_review TIMESTAMP DEFAULT NOW(),
+            interval_days INTEGER DEFAULT 1,
+            review_count INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT NOW()
         );
     """)
@@ -385,6 +388,66 @@ def delete_flashcard(card_id):
     return jsonify({"ok": True})
 
 
+@app.route("/api/flashcards/<int:card_id>/review", methods=["POST"])
+@require_auth
+def review_flashcard(card_id):
+    """Spaced repetition: result = 'know' or 'dontknow'"""
+    data = request.json
+    result = data.get("result", "dontknow")
+
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT * FROM flashcards WHERE id = %s AND user_id = %s",
+        (card_id, request.user_id)
+    )
+    card = cur.fetchone()
+    if not card:
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Not found"}), 404
+
+    # Simple SM-2 inspired algorithm
+    interval = card["interval_days"] or 1
+    if result == "know":
+        # Double the interval, max 30 days
+        new_interval = min(interval * 2, 30)
+    else:
+        # Reset to 1 day
+        new_interval = 1
+
+    cur.execute("""
+        UPDATE flashcards
+        SET interval_days = %s,
+            next_review = NOW() + INTERVAL '%s days',
+            review_count = review_count + 1
+        WHERE id = %s AND user_id = %s
+        RETURNING *
+    """, (new_interval, new_interval, card_id, request.user_id))
+    updated = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+    return jsonify(dict(updated))
+
+
+@app.route("/api/flashcards/due", methods=["GET"])
+@require_auth
+def get_due_flashcards():
+    """Get cards due for review today"""
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT * FROM flashcards
+        WHERE user_id = %s AND next_review <= NOW()
+        ORDER BY next_review ASC
+    """, (request.user_id,))
+    cards = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify([dict(c) for c in cards])
+
+
 # ── IDEA GENERATOR ─────────────────────────────────────────────────────────────
 
 @app.route("/api/ideas", methods=["POST"])
@@ -430,6 +493,67 @@ def generate_ideas():
     except Exception as e:
         return jsonify({"error": f"Could not generate ideas: {str(e)[:100]}"}), 500
 
+
+
+# ── LEARNING PATH (FR10) ───────────────────────────────────────────────────────
+
+@app.route("/api/learning-path", methods=["GET"])
+@require_auth
+def learning_path():
+    conn = get_db()
+    cur = conn.cursor()
+
+    # Count tasks per language
+    cur.execute("""
+        SELECT language,
+               COUNT(*) as total,
+               SUM(CASE WHEN completed THEN 1 ELSE 0 END) as completed
+        FROM tasks WHERE user_id = %s
+        GROUP BY language
+    """, (request.user_id,))
+    lang_stats = {r["language"]: {"total": r["total"], "completed": r["completed"]} for r in cur.fetchall()}
+
+    cur.close()
+    conn.close()
+
+    all_languages = ["Python", "JavaScript", "Java", "C++", "TypeScript", "Go", "Rust"]
+
+    suggestions = []
+
+    # Languages never tried
+    untried = [l for l in all_languages if l not in lang_stats]
+    for lang in untried[:2]:
+        suggestions.append({
+            "language": lang,
+            "reason": "You have not tried this language yet",
+            "type": "new",
+            "priority": 3
+        })
+
+    # Languages with low completion rate
+    for lang, stats in lang_stats.items():
+        rate = (stats["completed"] / stats["total"] * 100) if stats["total"] > 0 else 0
+        if rate < 50 and stats["total"] >= 1:
+            suggestions.append({
+                "language": lang,
+                "reason": f"Only {int(rate)}% of your {lang} tasks are completed — keep going",
+                "type": "improve",
+                "priority": 1
+            })
+        elif rate == 100 and stats["total"] >= 2:
+            suggestions.append({
+                "language": lang,
+                "reason": f"You completed all {stats['total']} {lang} tasks — try a harder one",
+                "type": "advance",
+                "priority": 2
+            })
+
+    suggestions.sort(key=lambda x: x["priority"])
+
+    return jsonify({
+        "lang_stats": lang_stats,
+        "suggestions": suggestions[:4]
+    })
 
 # ── ANALYTICS ──────────────────────────────────────────────────────────────────
 
